@@ -33,7 +33,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',  # Allows public access to endpoints unless specified
+        'rest_framework.permissions.AllowAny',
+        #'rest_framework.permissions.IsAuthenticated',  # Allows public access to endpoints unless specified
     ),
 }
 

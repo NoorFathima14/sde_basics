@@ -3,9 +3,14 @@ from .models import UserModel, BookModel
 import re
 
 class UserSerializer(serializers.ModelSerializer):
+    # class Meta:
+    #     model = UserModel
+    #     fields = "__all__"
+    books = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = UserModel
-        fields = "__all__"
+        fields = ["id", "username", "email", "password", "books"]
 
     def validate_username(self, value):
         """Ensure username only contains letters, numbers, and underscores, and is unique if changed."""
@@ -51,6 +56,11 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
 class BookSerializer(serializers.ModelSerializer):
+    # class Meta:
+    #     model =  BookModel
+    #     fields= "__all__"
+    user = serializers.PrimaryKeyRelatedField(queryset=UserModel.objects.all())
+
     class Meta:
-        model =  BookModel
-        fields= "__all__"
+        model = BookModel
+        fields = ["id", "bookname", "author", "published_date", "user"]

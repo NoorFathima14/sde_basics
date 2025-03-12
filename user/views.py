@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import UserModel, BookModel
 from .serializers import UserSerializer, BookSerializer
+from django.shortcuts import get_object_or_404
 
 class UserView(APIView):
     def get(self, request):
@@ -84,3 +85,21 @@ class BookViewWithId(APIView):
         book = self.get_object(id)
         book.delete()
         return Response(status=status.HTTP_200_OK)
+    
+class UserBooksView(APIView):
+    def get(self, request, user_id):
+        user = get_object_or_404(UserModel, id=user_id)
+        books = BookModel.objects.filter(user=user)
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, user_id):
+        user = get_object_or_404(UserModel, id=user_id)
+        data = request.data.copy()
+        data["user"] = user.id  # Assign the user ID to the book data
+
+        serializer = BookSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
